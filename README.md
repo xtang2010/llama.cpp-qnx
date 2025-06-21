@@ -4,6 +4,8 @@ This is to port GGML's [llama.cpp](https://github.com/ggml-org/llama.cpp) <img s
 
 ## How to build
 
+You can build by yourself, or you can direct download the [latest binaries](https://github.com/xtang2010/llama.cpp-qnx/releases/download/b2025062101/llama-b2025062101-bin-qnx8-cpu-x64.tgz).
+
 **NOTE**: QNX ports are only supported from a Linux host operating system
 
 Use `$(nproc)` instead of `4` after `JLEVEL=` and `-j` if you want to use the maximum number of cores to build this project.
@@ -60,13 +62,13 @@ TARGET_HOST=<target-ip-address-or-hostname>
 # Move llama.cpp test binaries and libs to your x86_64 QNX target
 scp -r build-files/ports/llama.cpp/nto-x86-64/build/bin qnxuser@$TARGET_HOST:/data/home/qnxuser/llama.cpp/
 ```
-You will also need gguf model file for llama.cpp to perform. You can download your faviroute [Hugging Face](https://huggingface.co/), or I have prepared a couple of sample for you. Download [here](https://github.com/xtang2010/release/models.tgz)
+You will also need gguf model file for llama.cpp to perform. You can download your faviroute [Hugging Face](https://huggingface.co/), or I have prepared a couple of sample for you. Download [here]([https://github.com/xtang2010/release/models.tgz](https://github.com/xtang2010/llama.cpp-qnx/releases/download/b2025062101/models.tgz))
 
 Download these models on target.
 ```base
 # Download models and copy it to target
 cd build-files/ports/llama.cpp
-curl -L https://github.com/xtang2010/release/models.tgz -O - | tar xzvf -
+curl -L https://github.com/xtang2010/llama.cpp-qnx/releases/download/b2025062101/models.tgz -O - | tar xzvf -
 scp -r models qnxuser@$TARGET_HOST:/data/home/qnxuser/llama.cpp/
 ```
 
