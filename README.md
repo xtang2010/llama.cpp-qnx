@@ -88,5 +88,5 @@ bin/llama-server -m models/qwen3-751.63M-Q4_K_M.gguf --host 0.0.0.0
 ```
 And now start a browser on your Linux host, point it to :
 
-http://<target-ip-address-or-hostname>:8080/
+http://\<target-ip-address-or-hostname\>:8080/
 
