@@ -1,0 +1,81 @@
+diff --git a/common/arg.cpp b/common/arg.cpp
+index 0d0daa36..4eb8a613 100644
+--- a/common/arg.cpp
++++ b/common/arg.cpp
+@@ -195,6 +195,8 @@ bool common_has_curl() {
+ #   endif
+ #elif defined(_AIX)
+ #include <sys/limits.h>
++#elif defined(__QNX__)
++#include <limits.h>
+ #else
+ #include <sys/syslimits.h>
+ #endif
+diff --git a/common/common.cpp b/common/common.cpp
+index e23887c7..73a113e0 100644
+--- a/common/common.cpp
++++ b/common/common.cpp
+@@ -851,7 +851,7 @@ std::string fs_get_cache_directory() {
+     if (getenv("LLAMA_CACHE")) {
+         cache_directory = std::getenv("LLAMA_CACHE");
+     } else {
+-#if defined(__linux__) || defined(__FreeBSD__) || defined(_AIX) || defined(__OpenBSD__)
++#if defined(__linux__) || defined(__FreeBSD__) || defined(_AIX) || defined(__OpenBSD__) || defined(__QNX__)
+         if (std::getenv("XDG_CACHE_HOME")) {
+             cache_directory = std::getenv("XDG_CACHE_HOME");
+         } else {
+diff --git a/ggml/src/ggml-cpu/ggml-cpu.cpp b/ggml/src/ggml-cpu/ggml-cpu.cpp
+index 735ef3f0..39c4ad6c 100644
+--- a/ggml/src/ggml-cpu/ggml-cpu.cpp
++++ b/ggml/src/ggml-cpu/ggml-cpu.cpp
+@@ -333,6 +333,41 @@ static const char * ggml_backend_cpu_device_get_description(ggml_backend_dev_t d
+     return ctx->description.c_str();
+ }
+ 
++#ifdef __QNX__
++#include <fcntl.h>
++#include <sys/stat.h>
++#include <sys/syspage.h>
++static int _qnx_get_memory(size_t *total, size_t *free) {
++    int                 fd;
++    struct stat         st;
++    char                *str = (char *)SYSPAGE_ENTRY(strings)->data;
++    struct asinfo_entry *as  = (struct asinfo_entry *)SYSPAGE_ENTRY(asinfo);
++    unsigned			num;
++
++    *total = *free = 0;
++
++    if ((fd = open("/proc", O_RDONLY)) == -1) {
++        return -1;
++    }
++
++    if (fstat(fd, &st) == -1) {
++        return -1;
++    }
++
++    *free = st.st_size;
++    close(fd);
++
++	for (num = SYSPAGE_ENTRY_SIZE(asinfo) / sizeof(*as); num > 0; --num) {
++		if (strcmp(&str[as->name], "ram") == 0) {
++			*total += as->end - as->start + 1;
++		}
++		++as;
++	}
++
++    return 0;
++}
++#endif
++
+ static void ggml_backend_cpu_device_get_memory(ggml_backend_dev_t dev, size_t * free, size_t * total) {
+ #ifdef _WIN32
+     MEMORYSTATUSEX status;
+@@ -340,6 +375,8 @@ static void ggml_backend_cpu_device_get_memory(ggml_backend_dev_t dev, size_t *
+     GlobalMemoryStatusEx(&status);
+     *total = status.ullTotalPhys;
+     *free = status.ullAvailPhys;
++#elif __QNX__
++    _qnx_get_memory(total, free);
+ #else
+     long pages = sysconf(_SC_PHYS_PAGES);
+     long page_size = sysconf(_SC_PAGE_SIZE);
