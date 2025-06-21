@@ -70,7 +70,7 @@ curl -L https://github.com/xtang2010/release/models.tgz -O - | tar xzvf -
 scp -r models qnxuser@$TARGET_HOST:/data/home/qnxuser/llama.cpp/
 ```
 
-Run  on the target.
+Run llama-cli on the target, you can start a chat on console.
 ```bash
 # ssh on target
 ssh qnxuser@$TARGET_HOST
@@ -78,3 +78,15 @@ cd /data/home/qnxuser/llama.cpp/
 export LD_LIBRARY_PATH=`pwd`/bin:$LD_LIBRARY_PATH
 bin/llama-cli -m models/qwen3-751.63M-Q4_K_M.gguf 
 ```
+Run llama-server on the target, and chat with your faviourte web browser on Linux Host.
+```bash
+# ssh on target
+ssh qnxuser@$TARGET_HOST
+cd /data/home/qnxuser/llama.cpp/
+export LD_LIBRARY_PATH=`pwd`/bin:$LD_LIBRARY_PATH
+bin/llama-server -m models/qwen3-751.63M-Q4_K_M.gguf --host 0.0.0.0 
+```
+And now start a browser on your Linux host, point it to :
+
+http://<target-ip-address-or-hostname>:8080/
+
