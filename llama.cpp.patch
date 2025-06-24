@@ -1,5 +1,5 @@
 diff --git a/common/arg.cpp b/common/arg.cpp
-index 0d0daa36..4eb8a613 100644
+index 3dfaa71e..07c08439 100644
 --- a/common/arg.cpp
 +++ b/common/arg.cpp
 @@ -195,6 +195,8 @@ bool common_has_curl() {
@@ -12,10 +12,10 @@ index 0d0daa36..4eb8a613 100644
  #include <sys/syslimits.h>
  #endif
 diff --git a/common/common.cpp b/common/common.cpp
-index e23887c7..73a113e0 100644
+index c2c94e7a..f1e5bca4 100644
 --- a/common/common.cpp
 +++ b/common/common.cpp
-@@ -851,7 +851,7 @@ std::string fs_get_cache_directory() {
+@@ -865,7 +865,7 @@ std::string fs_get_cache_directory() {
      if (getenv("LLAMA_CACHE")) {
          cache_directory = std::getenv("LLAMA_CACHE");
      } else {
@@ -24,6 +24,19 @@ index e23887c7..73a113e0 100644
          if (std::getenv("XDG_CACHE_HOME")) {
              cache_directory = std::getenv("XDG_CACHE_HOME");
          } else {
+diff --git a/ggml/cmake/common.cmake b/ggml/cmake/common.cmake
+index cb663883..1f0f8bd7 100644
+--- a/ggml/cmake/common.cmake
++++ b/ggml/cmake/common.cmake
+@@ -29,7 +29,7 @@ function(ggml_get_system_arch)
+     if (CMAKE_OSX_ARCHITECTURES      STREQUAL "arm64" OR
+         CMAKE_GENERATOR_PLATFORM_LWR STREQUAL "arm64" OR
+         (NOT CMAKE_OSX_ARCHITECTURES AND NOT CMAKE_GENERATOR_PLATFORM_LWR AND
+-            CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm.*|ARM64)$"))
++            CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|aarch64.*|arm.*|ARM64)$"))
+         set(GGML_SYSTEM_ARCH "ARM" PARENT_SCOPE)
+     elseif (CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64" OR
+             CMAKE_GENERATOR_PLATFORM_LWR MATCHES "^(x86_64|i686|amd64|x64|win32)$" OR
 diff --git a/ggml/src/ggml-cpu/ggml-cpu.cpp b/ggml/src/ggml-cpu/ggml-cpu.cpp
 index 735ef3f0..39c4ad6c 100644
 --- a/ggml/src/ggml-cpu/ggml-cpu.cpp
