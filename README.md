@@ -1,10 +1,12 @@
 # llama.cpp port to QNX
 
-This is to port GGML's [llama.cpp](https://github.com/ggml-org/llama.cpp) <img src="https://avatars.githubusercontent.com/u/134263123?s=48&v=4" width=24 /> project to QNX. Currently only support CPU based ggml. Note llama.cpp is in active development, code is change fast. I have verify the port on llama.cpp tag "b5712", and QNX SDP 8.0
+This is to port GGML's [llama.cpp](https://github.com/ggml-org/llama.cpp) <img src="https://avatars.githubusercontent.com/u/134263123?s=48&v=4" width=24 /> project to QNX. Currently only support CPU based ggml. With llama.cpp, you can run all the latest LLM models on your own hardware (including Gemma3, Llama3, Deepseek-r1, Qiwen3, ...)
+
+## Use pre-built binary
+
+If you don't want to build by yourself, you can choose to use the [pre-built binary](https://github.com/xtang2010/llama.cpp-qnx/releases). 
 
 ## How to build
-
-You can build by yourself, or you can direct download the [latest binaries](https://github.com/xtang2010/llama.cpp-qnx/releases/download/b2025062101/llama-b2025062101-bin-qnx8-cpu-x64.tgz).
 
 **NOTE**: QNX ports are only supported from a Linux host operating system
 
@@ -53,16 +55,39 @@ source ~/qnx800/qnxsdp-env.sh
 QNX_PROJECT_ROOT="$(pwd)/llama.cpp" make -C build-files/ports/llama.cpp -j4
 ```
 
-## How to run
+## How to run test
 
-scp libraries and tests to the target.
+llama.cpp come with test code to help you test your new binaries. If you wish to execute these test cases, you must do this.
+```bash
+# Build test script
+QNX_PROJECT_ROOT="$(pwd)/llama.cpp" make -C build-files/ports/llama.cpp -j4 test
+
+# Move all the binaries, supporting files to your QNX target
+TARGET_HOST=<target-ip-address-or-hostname>
+
+scp -r build-files/ports/llama.cpp/nto-x86-64/build/bin qnxuser@$TARGET_HOST:/data/home/qnxuser/llama.cpp/
+scp build-files/ports/llama.cpp/nto-x86-64/build/llama-test.sh qnxuser@$TARGET_HOST:/data/home/qnxuser/llama.cpp/
+scp -r llama.cpp/models qnxuser@$TARGET_HOST:/data/home/qnxuser/llama.cpp/
+```
+You can now move to the target to execute the test cases
+```bash
+ssh qnxuser@$TARGET_HOST
+cd /data/home/qnxuser/llama.cpp/
+export LD_LIBRARY_PATH=`pwd`/bin:$LD_LIBRARY_PATH
+./llama-test.sh
+```
+You get the result on terminal, and all detail test run output will be in llama-test.log
+
+## How to run llama.cpp
+
+scp libraries and tests to the target, if you haven't do so
 ```bash
 TARGET_HOST=<target-ip-address-or-hostname>
 
 # Move llama.cpp test binaries and libs to your x86_64 QNX target
 scp -r build-files/ports/llama.cpp/nto-x86-64/build/bin qnxuser@$TARGET_HOST:/data/home/qnxuser/llama.cpp/
 ```
-You will also need gguf model file for llama.cpp to perform. You can download your faviroute [Hugging Face](https://huggingface.co/), or I have prepared a couple of sample for you. Download [here]([https://github.com/xtang2010/release/models.tgz](https://github.com/xtang2010/llama.cpp-qnx/releases/download/b2025062101/models.tgz))
+You will also need gguf model file for llama.cpp to perform. You can download your faviroute from [Hugging Face](https://huggingface.co/); another way is download models from [ollama](https://ollama.com/library), and use [OllamaToGGUF](https://github.com/xtang2010/OllamaToGGUF) to convert them to gguf. Or I have just prepared a [sample]([https://github.com/xtang2010/release/models.tgz](https://github.com/xtang2010/llama.cpp-qnx/releases/download/b2025062101/models.tgz)) for you.
 
 Download these models on target.
 ```base
