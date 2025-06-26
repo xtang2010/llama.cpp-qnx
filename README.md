@@ -69,14 +69,54 @@ scp -r build-files/ports/llama.cpp/nto-x86-64/build/bin qnxuser@$TARGET_HOST:/da
 scp build-files/ports/llama.cpp/nto-x86-64/build/llama-test.sh qnxuser@$TARGET_HOST:/data/home/qnxuser/llama.cpp/
 scp -r llama.cpp/models qnxuser@$TARGET_HOST:/data/home/qnxuser/llama.cpp/
 ```
-You can now move to the target to execute the test cases
+You can now move to the target to execute the test cases.
 ```bash
-ssh qnxuser@$TARGET_HOST
-cd /data/home/qnxuser/llama.cpp/
-export LD_LIBRARY_PATH=`pwd`/bin:$LD_LIBRARY_PATH
-./llama-test.sh
+$ ssh qnxuser@$TARGET_HOST
+$ cd /data/home/qnxuser/llama.cpp/
+$ export LD_LIBRARY_PATH=`pwd`/bin:$LD_LIBRARY_PATH
+$ ./llama-test.sh
+Test  #1: test-tokenizer-0-bert-bge:passed
+Test  #2: test-tokenizer-0-command-r:passed
+Test  #3: test-tokenizer-0-deepseek-coder:passed
+Test  #4: test-tokenizer-0-deepseek-llm:passed
+Test  #5: test-tokenizer-0-falcon:passed
+Test  #6: test-tokenizer-0-gpt-2:passed
+Test  #7: test-tokenizer-0-llama-bpe:passed
+Test  #8: test-tokenizer-0-llama-spm:passed
+Test  #9: test-tokenizer-0-mpt:passed
+Test #10: test-tokenizer-0-phi-3:passed
+Test #11: test-tokenizer-0-qwen2:passed
+Test #12: test-tokenizer-0-refact:passed
+Test #13: test-tokenizer-0-starcoder:passed
+Test #14: test-tokenizers-ggml-vocabs:failed
+Test #15: test-sampling:passed
+Test #16: test-grammar-parser:passed
+Test #17: test-grammar-integration:passed
+Test #18: test-llama-grammar:passed
+Test #19: test-chat:passed
+Test #20: test-json-schema-to-grammar:passed
+Test #21: test-tokenizer-1-llama-spm:passed
+Test #22: test-chat-parser:passed
+Test #23: test-chat-template:passed
+Test #24: test-json-partial:passed
+Test #25: test-log:passed
+Test #26: test-regex-partial:passed
+Test #27: test-thread-safety:failed
+Test #28: test-arg-parser:failed
+Test #29: test-gguf:passed
+Test #30: test-backend-ops:passed
+Test #31: test-model-load-cancel:passed
+Test #32: test-autorelease:passed
+Test #33: test-barrier:passed
+Test #34: test-quantize-fns:passed
+Test #35: test-quantize-perf:passed
+Test #36: test-rope:passed
+Test #37: test-mtmd-c-api:passed
+Test #38: test-eval-callback:failed
+Total test: 38
+Passed: 34
 ```
-You get the result on terminal, and all detail test run output will be in llama-test.log
+All detail test run output will be in llama-test.log
 
 ## How to run llama.cpp
 
