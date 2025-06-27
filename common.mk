@@ -6,7 +6,7 @@ include $(QCONFIG)
 include $(MKFILES_ROOT)/qmacros.mk
 
 NAME=llama.cpp
-QNX_PROJECT_ROOT ?= $(PROJECT_ROOT)/../../../$(NAME)
+QNX_PROJECT_ROOT ?= $(shell readlink -f $(PROJECT_ROOT)/../../../$(NAME))
 
 #where to install:
 LLAMA_INSTALL_ROOT ?= $(INSTALL_ROOT_$(OS))
@@ -18,7 +18,7 @@ CMAKE_BUILD_TYPE ?= Debug
 
 #override 'all' target to bypass the default QNX build system
 ALL_DEPENDENCIES = llama_all
-.PHONY: llama_all
+.PHONY: llama_all test
 
 CFLAGS += $(FLAGS)
 
@@ -61,5 +61,8 @@ clean iclean spotless: clean-patch
 	rm -fr build
 
 cuninstall uninstall:
+
+test: 
+	cd build && $(PROJECT_ROOT)/ctest2cmd.sh $(PROJECT_ROOT) $(QNX_PROJECT_ROOT)
 
 endif
