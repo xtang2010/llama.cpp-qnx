@@ -1,8 +1,8 @@
 diff --git a/common/arg.cpp b/common/arg.cpp
-index 3dfaa71e..07c08439 100644
+index b34e594c8..f6c40627b 100644
 --- a/common/arg.cpp
 +++ b/common/arg.cpp
-@@ -195,6 +195,8 @@ bool common_has_curl() {
+@@ -43,6 +43,8 @@
  #   endif
  #elif defined(_AIX)
  #include <sys/limits.h>
@@ -12,20 +12,33 @@ index 3dfaa71e..07c08439 100644
  #include <sys/syslimits.h>
  #endif
 diff --git a/common/common.cpp b/common/common.cpp
-index c2c94e7a..f1e5bca4 100644
+index 16f78debd..2620d74aa 100644
 --- a/common/common.cpp
 +++ b/common/common.cpp
-@@ -865,7 +865,7 @@ std::string fs_get_cache_directory() {
-     if (getenv("LLAMA_CACHE")) {
+@@ -948,7 +948,7 @@ std::string fs_get_cache_directory() {
          cache_directory = std::getenv("LLAMA_CACHE");
      } else {
--#if defined(__linux__) || defined(__FreeBSD__) || defined(_AIX) || defined(__OpenBSD__)
-+#if defined(__linux__) || defined(__FreeBSD__) || defined(_AIX) || defined(__OpenBSD__) || defined(__QNX__)
+ #if defined(__linux__) || defined(__FreeBSD__) || defined(_AIX) || \
+-        defined(__OpenBSD__) || defined(__NetBSD__)
++        defined(__OpenBSD__) || defined(__NetBSD__) || defined(__QNX__)
          if (std::getenv("XDG_CACHE_HOME")) {
              cache_directory = std::getenv("XDG_CACHE_HOME");
-         } else {
+         } else if (std::getenv("HOME")) {
+diff --git a/common/download.cpp b/common/download.cpp
+index 055f0038f..68db5b1e5 100644
+--- a/common/download.cpp
++++ b/common/download.cpp
+@@ -31,6 +31,8 @@
+ #   endif
+ #elif defined(_AIX)
+ #include <sys/limits.h>
++#elif defined(__QNX__)
++#include <limits.h>
+ #else
+ #include <sys/syslimits.h>
+ #endif
 diff --git a/ggml/cmake/common.cmake b/ggml/cmake/common.cmake
-index cb663883..1f0f8bd7 100644
+index cb6638833..1f0f8bd73 100644
 --- a/ggml/cmake/common.cmake
 +++ b/ggml/cmake/common.cmake
 @@ -29,7 +29,7 @@ function(ggml_get_system_arch)
@@ -38,10 +51,10 @@ index cb663883..1f0f8bd7 100644
      elseif (CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64" OR
              CMAKE_GENERATOR_PLATFORM_LWR MATCHES "^(x86_64|i686|amd64|x64|win32)$" OR
 diff --git a/ggml/src/ggml-cpu/ggml-cpu.cpp b/ggml/src/ggml-cpu/ggml-cpu.cpp
-index 735ef3f0..39c4ad6c 100644
+index 49f840be2..a4ca31756 100644
 --- a/ggml/src/ggml-cpu/ggml-cpu.cpp
 +++ b/ggml/src/ggml-cpu/ggml-cpu.cpp
-@@ -333,6 +333,41 @@ static const char * ggml_backend_cpu_device_get_description(ggml_backend_dev_t d
+@@ -362,6 +362,41 @@ static const char * ggml_backend_cpu_device_get_description(ggml_backend_dev_t d
      return ctx->description.c_str();
  }
  
@@ -54,10 +67,10 @@ index 735ef3f0..39c4ad6c 100644
 +    struct stat         st;
 +    char                *str = (char *)SYSPAGE_ENTRY(strings)->data;
 +    struct asinfo_entry *as  = (struct asinfo_entry *)SYSPAGE_ENTRY(asinfo);
-+    unsigned			num;
++    unsigned            num;
 +
 +    *total = *free = 0;
-+
++    
 +    if ((fd = open("/proc", O_RDONLY)) == -1) {
 +        return -1;
 +    }
@@ -69,12 +82,12 @@ index 735ef3f0..39c4ad6c 100644
 +    *free = st.st_size;
 +    close(fd);
 +
-+	for (num = SYSPAGE_ENTRY_SIZE(asinfo) / sizeof(*as); num > 0; --num) {
-+		if (strcmp(&str[as->name], "ram") == 0) {
-+			*total += as->end - as->start + 1;
-+		}
-+		++as;
++    for (num = SYSPAGE_ENTRY_SIZE(asinfo) / sizeof(*as); num > 0; --num) {
++        if (strcmp(&str[as->name], "ram") == 0) {
++	    *total += as->end - as->start + 1;
 +	}
++	++as;
++    }
 +
 +    return 0;
 +}
@@ -83,7 +96,7 @@ index 735ef3f0..39c4ad6c 100644
  static void ggml_backend_cpu_device_get_memory(ggml_backend_dev_t dev, size_t * free, size_t * total) {
  #ifdef _WIN32
      MEMORYSTATUSEX status;
-@@ -340,6 +375,8 @@ static void ggml_backend_cpu_device_get_memory(ggml_backend_dev_t dev, size_t *
+@@ -369,6 +404,8 @@ static void ggml_backend_cpu_device_get_memory(ggml_backend_dev_t dev, size_t *
      GlobalMemoryStatusEx(&status);
      *total = status.ullTotalPhys;
      *free = status.ullAvailPhys;
