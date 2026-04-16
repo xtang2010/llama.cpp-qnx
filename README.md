@@ -2,6 +2,9 @@
 
 This is to port GGML's [llama.cpp](https://github.com/ggml-org/llama.cpp) <img src="https://avatars.githubusercontent.com/u/134263123?s=48&v=4" width=24 /> project to QNX. Currently only support CPU based ggml. With llama.cpp, you can run all the latest LLM models on your own hardware (including Gemma3, Llama3, Deepseek-r1, Qiwen3, ...)
 
+The latest release was tested with llama.cpp b8808, and google/gemma-4-E4B-it model.
+
+
 ## Use pre-built binary
 
 If you don't want to build by yourself, you can choose to use the [pre-built binary](https://github.com/xtang2010/llama.cpp-qnx/releases). 
