@@ -57,11 +57,13 @@ QNX_PROJECT_ROOT="$(pwd)/llama.cpp" make -C build-files/ports/llama.cpp -j4
 
 ## How to run test
 
-llama.cpp come with test code to help you test your new binaries. If you wish to execute these test cases, you must do this.
+llama.cpp come with test code to help you test your new binaries. If you wish to execute these test cases, build the binaries useing above steps first, then you can do this.
 ```bash
 # Build test script
-QNX_PROJECT_ROOT="$(pwd)/llama.cpp" make -C build-files/ports/llama.cpp -j4 test
-
+QNX_PROJECT_ROOT="$(pwd)/llama.cpp" make -C build-files/ports/llama.cpp test
+```
+This will generate a shell script to execute the test cases. You then move all binaries, test script, and models (used by the test) to the target.
+```bash
 # Move all the binaries, supporting files to your QNX target
 TARGET_HOST=<target-ip-address-or-hostname>
 
@@ -69,7 +71,7 @@ scp -r build-files/ports/llama.cpp/nto-x86-64/build/bin qnxuser@$TARGET_HOST:/da
 scp build-files/ports/llama.cpp/nto-x86-64/build/llama-test.sh qnxuser@$TARGET_HOST:/data/home/qnxuser/llama.cpp/
 scp -r llama.cpp/models qnxuser@$TARGET_HOST:/data/home/qnxuser/llama.cpp/
 ```
-You can now move to the target to execute the test cases.
+You can now go to the target to execute the test cases.
 ```bash
 $ ssh qnxuser@$TARGET_HOST
 $ cd /data/home/qnxuser/llama.cpp/
